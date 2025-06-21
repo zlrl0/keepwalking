@@ -29,16 +29,14 @@ const CompletedChallengesScreen = () => {
                 <View style={styles.cardBottomSection}>
                   <Text style={styles.cardSuccess}>성공률 : 66% (2/3일 성공)</Text>
                   <Text style={styles.cardPeriod}>기간 : 2025. 05. 19 ~ 2025. 05. 23 (5일)</Text>
-                  <TouchableOpacity style={styles.retryButton}>
-                    <Text style={styles.retryButtonText}>다시 도전하기</Text>
-                  </TouchableOpacity>
+                  {/* 다시 도전하기 버튼 제거됨 */}
                 </View>
               </View>
             </View>
           ))}
 
           <View style={styles.footerBox}>
-            <Text style={styles.moreText}>더보기</Text>
+            
 
             <TouchableOpacity style={styles.addBtn}>
               <Text style={styles.addBtnText}>+ 나만의 챌린지 만들기</Text>
@@ -124,16 +122,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#555',
     marginBottom: 8,
-  },
-  retryButton: {
-    backgroundColor: '#ddd',
-    paddingVertical: 6,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  retryButtonText: {
-    fontSize: 13,
-    color: '#333',
   },
   footerBox: {
     width: '100%',

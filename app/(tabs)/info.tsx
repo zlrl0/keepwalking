@@ -1,6 +1,6 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
-import { useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import InfoCard from '../../components/InfoCard';
 import { useFavorites } from '../../context/FavoriteContext';
@@ -13,43 +13,63 @@ interface CardItem {
   emoji: string;
 }
 
+const seoulBusTimes = ['07:30', '14:40', '15:40', '17:40', '18:40', '23:00'];
+const davinciBusTimes = ['07:50', '07:55', '08:50', '17:00', '18:00', '23:00'];
+
+function getNextBusDiff(busTimes: string[]): string {
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  for (const timeStr of busTimes) {
+    const [h, m] = timeStr.split(':').map(Number);
+    const total = h * 60 + m;
+    if (total > nowMins) {
+      const diff = total - nowMins;
+      return `${diff}분 후`;
+    }
+  }
+  return '오늘 운행 종료';
+}
+
 export default function UnifiedInfoScreen() {
   const { favorites } = useFavorites();
   const router = useRouter();
 
   const [librarySubtitle, setLibrarySubtitle] = useState('예약 정보가 없습니다.');
+  const [busSubtitle, setBusSubtitle] = useState('');
 
-  // ✅ 화면에 포커스될 때마다 최신 예약 정보 fetch
-  useFocusEffect(
-    useCallback(() => {
-      const fetchReservation = async () => {
-        const user = auth.currentUser;
-        if (!user) return;
+  useEffect(() => {
+    const fetchReservation = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
-        try {
-          const ref = doc(db, 'reservations', user.uid);
-          const snap = await getDoc(ref);
-          if (snap.exists()) {
-            const data = snap.data();
-            setLibrarySubtitle(`장소: ${data.roomName}`);
-          } else {
-            setLibrarySubtitle('예약 정보가 없습니다.');
-          }
-        } catch (err) {
-          console.error('❌ Firestore 읽기 실패:', err);
-          setLibrarySubtitle('예약 정보가 없습니다.');
-        }
-      };
+      const ref = doc(db, 'reservations', user.uid);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        setLibrarySubtitle(`장소: ${data.roomName}`);
+      }
+    };
+    fetchReservation();
+  }, []);
 
-      fetchReservation();
-    }, [])
-  );
+  useEffect(() => {
+    const updateBus = () => {
+      const s = getNextBusDiff(seoulBusTimes);
+      const d = getNextBusDiff(davinciBusTimes);
+      setBusSubtitle(`서울 캠퍼스 방면: ${s} | 다빈치 캠퍼스 방면: ${d}`);
+    };
+
+    updateBus();
+    const interval = setInterval(updateBus, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const cardData: CardItem[] = [
-    { id: '1', title: '수업 정보', subtitle: '09:00~10:15 | B310 / History of Culture', emoji: '📘' },
+    { id: '1', title: '수업 정보', subtitle: '', emoji: '📘' },
     { id: '2', title: '도서관 예약', subtitle: librarySubtitle, emoji: '📚' },
-    { id: '3', title: '셔틀버스', subtitle: '3분 후 | B10관 → 기숙사', emoji: '🚌' },
-    { id: '4', title: '축제', subtitle: '05/23 | 에스파(aespa)', emoji: '🎉' },
+    { id: '3', title: '셔틀버스', subtitle: busSubtitle, emoji: '🚌' },
+    { id: '4', title: '축제', subtitle: '', emoji: '🎉' },
   ];
 
   const filteredData = cardData.filter((item) => favorites.includes(item.title));

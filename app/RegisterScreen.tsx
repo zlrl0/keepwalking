@@ -1,8 +1,15 @@
+// app/screens/RegisterScreen.tsx
 import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { Alert, Button, StyleSheet, TextInput, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { auth, db } from '../firebase/firebaseConfig';
 
 export default function RegisterScreen() {
@@ -12,36 +19,35 @@ export default function RegisterScreen() {
   const router = useRouter();
 
   const handleRegister = async () => {
-    if (!email || !password || !nickname) {
-      Alert.alert('모든 항목을 입력하세요.');
-      return;
-    }
+    if (!email || !password || !nickname) return;
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Firestore에 유저 정보 저장
       await setDoc(doc(db, 'users', user.uid), {
         email,
         nickname,
         createdAt: new Date(),
       });
 
-      // 자동 로그인 상태이므로 바로 홈으로 이동
-      router.replace('/main');
+      // ✅ 알림 없이 바로 메인 탭으로 이동
+      router.replace('/(tabs)/main');
     } catch (error: any) {
-      Alert.alert('회원가입 실패', error.message);
+      console.error('회원가입 실패:', error.message);
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>회원가입</Text>
+
       <TextInput
         placeholder="닉네임"
         value={nickname}
         onChangeText={setNickname}
         style={styles.input}
+        placeholderTextColor="#999"
       />
       <TextInput
         placeholder="이메일"
@@ -50,6 +56,7 @@ export default function RegisterScreen() {
         style={styles.input}
         keyboardType="email-address"
         autoCapitalize="none"
+        placeholderTextColor="#999"
       />
       <TextInput
         placeholder="비밀번호"
@@ -57,8 +64,12 @@ export default function RegisterScreen() {
         onChangeText={setPassword}
         style={styles.input}
         secureTextEntry
+        placeholderTextColor="#999"
       />
-      <Button title="회원가입" onPress={handleRegister} />
+
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>회원가입</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -66,12 +77,40 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E6F4EE',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    padding: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#29735C',
   },
   input: {
-    borderBottomWidth: 1,
-    marginBottom: 12,
-    paddingVertical: 8,
+    width: '100%',
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    fontSize: 16,
+    marginBottom: 16,
+    borderColor: '#ddd',
+    borderWidth: 1,
+  },
+  button: {
+    backgroundColor: '#29735C',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

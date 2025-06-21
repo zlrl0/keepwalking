@@ -1,4 +1,3 @@
-// app/(tabs)/main.tsx
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,18 +7,24 @@ import { auth, db } from '../../firebase/firebaseConfig';
 
 export default function MainScreen() {
   const [nickname, setNickname] = useState('');
+  const [seoulShuttleText, setSeoulShuttleText] = useState('');
+  const [davinciShuttleText, setDavinciShuttleText] = useState('');
 
-  const handleTurtleClick = () => {
-    router.push('../turtle');
-  };
+  const seoulShuttleTimes = ['07:30', '14:40', '15:40', '17:40', '18:40', '23:00'];
+  const davinciShuttleTimes = ['07:50', '07:55', '08:50', '17:00', '18:00', '23:00'];
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.replace('/');
-    } catch (error) {
-      console.error('로그아웃 실패:', error);
+  const getNextShuttleText = (shuttleTimes: string[]) => {
+    const now = new Date();
+    for (let time of shuttleTimes) {
+      const [hour, minute] = time.split(':').map(Number);
+      const shuttleTime = new Date();
+      shuttleTime.setHours(hour, minute, 0, 0);
+      if (shuttleTime > now) {
+        const diffMin = Math.round((shuttleTime.getTime() - now.getTime()) / 60000);
+        return `${diffMin}분 후`;
+      }
     }
+    return '오늘 셔틀 종료';
   };
 
   useEffect(() => {
@@ -35,7 +40,32 @@ export default function MainScreen() {
     };
 
     fetchNickname();
+
+    // 처음 셔틀 시간 계산
+    setSeoulShuttleText(getNextShuttleText(seoulShuttleTimes));
+    setDavinciShuttleText(getNextShuttleText(davinciShuttleTimes));
+
+    // ⏱ 1분마다 갱신
+    const interval = setInterval(() => {
+      setSeoulShuttleText(getNextShuttleText(seoulShuttleTimes));
+      setDavinciShuttleText(getNextShuttleText(davinciShuttleTimes));
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const handleTurtleClick = () => {
+    router.push('../turtle');
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/');
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -70,7 +100,7 @@ export default function MainScreen() {
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>맞춤 공지사항</Text>
         <Text style={styles.noticeText}>📘 수업 : History of Culture (09:00~10:15) [B101]</Text>
-        <Text style={styles.noticeText}>📍 셔틀 : 3분 후 [B관 → 기숙사]</Text>
+        <Text style={styles.noticeText}>📍 셔틀 - 서울 캠퍼스 방면 : {seoulShuttleText} / 다빈치 캠퍼스 방면 : {davinciShuttleText}</Text>
         <Text style={styles.noticeText}>🎉 축제 05/23 : 에스파(aespa)</Text>
       </View>
 
