@@ -38,3 +38,5 @@ export const useChallenge = () => {
   if (!context) throw new Error('useChallenge must be used within a ChallengeProvider');
   return context;
 };
+
+export default ChallengeProvider;

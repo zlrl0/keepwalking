@@ -1,53 +1,57 @@
 // app/index.tsx
-import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState } from 'react';
+import { Alert, Button, StyleSheet, TextInput, View } from 'react-native';
+import { auth } from '../firebase/firebaseConfig';
 
-export default function HomeScreen() {
+export default function Home() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    if (!email || !password) return Alert.alert('모든 항목을 입력하세요.');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/main'); // 로그인 성공 시 메인화면으로 이동
+    } catch (err: any) {
+      Alert.alert('로그인 실패', err.message);
+    }
+  };
+
+  const goToRegister = () => {
+    router.push('/RegisterScreen'); // 회원가입 페이지로 이동
+  };
+
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/images/logo.png')} style={styles.logoImage} />
-
-      <Pressable style={styles.button} onPress={() => router.push('/login')}>
-        <Text style={styles.buttonText}>Log In</Text>
-      </Pressable>
+      <TextInput
+        placeholder="이메일"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        keyboardType="email-address"
+      />
+      <TextInput
+        placeholder="비밀번호"
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+        secureTextEntry
+      />
+      <Button title="로그인" onPress={handleLogin} />
+      <View style={{ marginVertical: 10 }} />
+      <Button title="회원가입" onPress={goToRegister} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E9F6F1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  logoImage: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 40,
-  },
-  button: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 36,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-    marginBottom: 16,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+  container: { flex: 1, justifyContent: 'center', padding: 20 },
+  input: {
+    borderBottomWidth: 1,
+    marginBottom: 12,
+    paddingVertical: 8,
   },
 });

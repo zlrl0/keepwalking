@@ -2,7 +2,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ProgressBar } from 'react-native-paper';
 import ChallengeBottomTab from './ChallengeBottomTab';
 
 const CompletedChallengesScreen = () => {
@@ -27,7 +26,6 @@ const CompletedChallengesScreen = () => {
               <View style={styles.cardInner}>
                 <Text style={styles.cardTitle}>알바 챌린지</Text>
                 <Text style={styles.cardSubText}>완료일 : 2025. 05. 23</Text>
-                <ProgressBar progress={0.66} color="#4caf50" style={styles.progress} />
                 <View style={styles.cardBottomSection}>
                   <Text style={styles.cardSuccess}>성공률 : 66% (2/3일 성공)</Text>
                   <Text style={styles.cardPeriod}>기간 : 2025. 05. 19 ~ 2025. 05. 23 (5일)</Text>
@@ -112,12 +110,6 @@ const styles = StyleSheet.create({
   },
   cardSubText: {
     fontSize: 13,
-    marginBottom: 4,
-  },
-  progress: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#eee',
     marginBottom: 4,
   },
   cardBottomSection: {

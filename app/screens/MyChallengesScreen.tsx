@@ -39,7 +39,7 @@ export default function MyChallengesScreen() {
                 color="#4caf50"
                 style={styles.progress}
               />
-              <Text style={styles.cardFooter}>🕒 남은 기간 : D-1    3/5</Text>
+
             </View>
           ))}
 

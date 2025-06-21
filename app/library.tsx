@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import { deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+import { auth, db } from '../firebase/firebaseConfig';
 
 interface Room {
   id: number;
@@ -24,12 +26,37 @@ export default function Library() {
   ]);
   const [reservedRoomId, setReservedRoomId] = useState<number | null>(null);
 
-  const handleReserve = (id: number) => {
+  // ✅ Firestore에서 예약 정보 불러오기
+  useEffect(() => {
+    const fetchReservation = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const ref = doc(db, 'reservations', user.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            const data = snap.data();
+            if (typeof data.roomId === 'number') {
+              setReservedRoomId(data.roomId);
+            }
+          }
+        } catch (err) {
+          console.error('❌ Firestore 예약 불러오기 실패:', err);
+        }
+      }
+    };
+    fetchReservation();
+  }, []);
+
+  const handleReserve = async (id: number) => {
     if (reservedRoomId !== null) {
       const message = '이미 예약된 열람실이 있습니다.';
       Platform.OS === 'web' ? window.alert(message) : Alert.alert(message);
       return;
     }
+
+    const selectedRoom = rooms.find((room) => room.id === id);
+    if (!selectedRoom) return;
 
     setRooms((prev) =>
       prev.map((room) =>
@@ -38,19 +65,30 @@ export default function Library() {
     );
     setReservedRoomId(id);
 
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const ref = doc(db, 'reservations', user.uid);
+        await setDoc(ref, {
+          roomId: selectedRoom.id,
+          roomName: selectedRoom.name,
+        });
+        console.log('✅ 예약 Firestore에 저장됨:', selectedRoom.name);
+      } catch (err) {
+        console.error('❌ Firestore 저장 실패:', err);
+      }
+    }
+
     const message = '예약이 완료되었습니다';
     Platform.OS === 'web' ? window.alert(message) : Alert.alert(message);
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (reservedRoomId === null) return;
 
     const confirmMessage = '예약을 취소하시겠습니까?';
 
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm(confirmMessage);
-      if (!confirmed) return;
-
+    const cancelLogic = async () => {
       setRooms((prev) =>
         prev.map((room) =>
           room.id === reservedRoomId
@@ -59,33 +97,29 @@ export default function Library() {
         )
       );
       setReservedRoomId(null);
-      window.alert('예약이 취소되었습니다');
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await deleteDoc(doc(db, 'reservations', user.uid));
+          console.log('❌ 예약 Firestore에서 삭제됨');
+        } catch (err) {
+          console.error('❌ Firestore 삭제 실패:', err);
+        }
+      }
+
+      const message = '예약이 취소되었습니다';
+      Platform.OS === 'web' ? window.alert(message) : Alert.alert(message);
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(confirmMessage);
+      if (confirmed) await cancelLogic();
     } else {
-      Alert.alert(
-        '예약 취소',
-        confirmMessage,
-        [
-          {
-            text: '아니요',
-            style: 'cancel',
-          },
-          {
-            text: '확인',
-            onPress: () => {
-              setRooms((prev) =>
-                prev.map((room) =>
-                  room.id === reservedRoomId
-                    ? { ...room, available: room.available + 1 }
-                    : room
-                )
-              );
-              setReservedRoomId(null);
-              Alert.alert('예약이 취소되었습니다');
-            },
-          },
-        ],
-        { cancelable: true }
-      );
+      Alert.alert('예약 취소', confirmMessage, [
+        { text: '아니요', style: 'cancel' },
+        { text: '확인', onPress: cancelLogic },
+      ]);
     }
   };
 
@@ -96,9 +130,7 @@ export default function Library() {
       <View style={styles.reservationBox}>
         {reservedRoom ? (
           <>
-            <Text style={styles.infoText}></Text>
-            <Text style={styles.infoText}>🏛 장소: </Text>
-            <Text style={styles.infoText}>{reservedRoom.name}</Text>
+            <Text style={styles.infoText}>🏛 장소: {reservedRoom.name}</Text>
             <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelText}>예약 취소하기</Text>
             </TouchableOpacity>

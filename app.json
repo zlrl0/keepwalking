@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.zlrlo.keepwalking"
     },
     "web": {
       "bundler": "metro",
@@ -49,6 +50,9 @@
     },
     "updates": {
       "url": "https://u.expo.dev/76ae0ea3-04f0-4bd4-ad48-901d3cf6d304"
-    }
+    },
+    "assetBundlePatterns": [
+    "**/*"
+    ]
   }
 }

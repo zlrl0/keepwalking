@@ -1,19 +1,21 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useTimetable } from '../context/TimetableContext';
 
+import { doc, setDoc } from 'firebase/firestore'; // ✅ Firebase 관련 추가
+import { auth, db } from '../firebase/firebaseConfig';
+
 const days = ['월', '화', '수', '목', '금'];
 const hours = ['09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30'];
-
 const pastelColors = ['#FFD1DC', '#C1E1C1', '#FFFACD', '#D1E0FF', '#E0BBE4'];
 const eraser = 'eraser';
 
@@ -26,7 +28,6 @@ export default function TimetableEdit() {
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
 
-  // ✅ 기존 timetableData를 불러와서 cells로 복원
   useEffect(() => {
     const restored: { [key: string]: { color: string; text: string } } = {};
     timetableData.forEach(({ day, time, color, text }) => {
@@ -74,13 +75,32 @@ export default function TimetableEdit() {
     }
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     const transformed = Object.entries(cells).map(([key, value]) => {
       const [day, time] = key.split('-');
-      return { day, time, color: value.color, text: value.text };
+      return {
+        day, 
+        time, 
+        color: value.color ?? '#FFFFFF', 
+        text: value.text ?? '',
+      };
     });
 
-    setTimetableData(transformed);
+    setTimetableData(transformed); // context 상태 업데이트
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const ref = doc(db, 'timetables', user.uid);
+        await setDoc(ref, { timetable: transformed });
+        console.log('✅ Firebase 저장 성공');
+      } catch (err) {
+        console.error('❌ Firebase 저장 실패:', err);
+      }
+    } else {
+      console.warn('⚠️ 사용자 없음: 저장되지 않음');
+    }
+
     router.back();
   };
 
