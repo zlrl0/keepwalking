@@ -1,83 +1,86 @@
-# 🚶‍♂️ KeepWalking – 건강한 캠퍼스를 위한 스마트 모빌리티 앱  
-*For Chung-Ang University Students & Staffs*
+# 🚶‍♂️ KeepWalking – A Smart Mobility App for a Healthier Campus  
+*For Chung-Ang University Students & Staff*
 
 ---
 
-## 🧐 What is the Problem?
+## 🧐 Problem Overview
 
-최근 중앙대학교 캠퍼스 내에서 **전동 킥보드 사용이 급증**하고 있습니다.  
-그러나 **단거리 이동에도 킥보드 사용이 잦아지면서 건강 문제와 안전 문제**가 함께 대두되고 있으며,  
+Electric kickboards are becoming increasingly common at Chung-Ang University.  
+However, the rising usage for **short-distance travel** has raised concerns regarding both **health and safety**.  
 
-한편으로는 **학교 공지사항, 이벤트 정보 등이 학생들에게 효과적으로 전달되지 못하는 문제**도 존재합니다.
+Meanwhile, **important school announcements and campus event updates** are not being delivered effectively to students, causing an **information gap**.
 
 ---
 
-## ⚠️ Current Issues
+## ⚠️ Current Challenges
 
 ### 🛴 Electric Kickboard Usage
-- 단거리 이동에도 킥보드 사용 → **불필요한 소비 & 건강 저해**
-- **헬멧 미착용, 무면허 운전 등 안전 문제**
-- **보행자 도로와의 혼재**로 인한 위험성 증가
+- Frequent use for short trips → **Unnecessary spending & reduced physical activity**
+- **Lack of safety**: No helmets, unlicensed riders
+- **Mixed pedestrian routes** causing danger for both riders and walkers
 
-### 📢 School Information Delivery
-- 기존 앱의 접근성과 사용성 부족
-- 공지 및 학사 일정 정보가 **집중적이지 않음**
-- **학생의 관심을 반영하지 않는 시스템**
+### 📢 Inefficient Information Delivery
+- Existing apps have **poor accessibility**
+- Announcements and schedules are not **centralized or engaging**
+- **Student interests are not reflected** in the content or design
 
 ---
 
-## 🎯 App Goal
+## 🎯 Our App’s Goal
 
-> 전동 킥보드의 **불필요한 사용을 줄이고**,  
-> **효과적인 학교 정보 전달**을 통해  
-> **건강하고 안전한 캠퍼스 환경**을 조성합니다.
+> **Reduce non-essential electric kickboard usage**  
+> and build a platform that **delivers school news effectively**  
+> while promoting a **safe and healthy campus culture**.
 
 ---
 
 ## 👥 Target Users
 
-- **중앙대학교 재학생 및 교직원**
-- **캠퍼스 내 이동이 잦은 사용자**
-- **학사일정, 교내 이벤트 정보를 쉽게 확인하고 싶은 사용자**
-- **보다 안전한 캠퍼스 생활을 원하는 사용자**
+- **Chung-Ang University students and staff**
+- Users who **frequently move around campus**
+- Users who want to **stay informed about academic schedules and events**
+- Those who want a **safer, healthier university experience**
 
 ---
 
-## ✨ Main Features
+## ✨ Key Features
 
-### 📱 통합 정보 관리 위젯
-- 잠금 화면에서 원하는 정보를 선택하여 표시  
-- 예: 학사일정, 공지사항, 행사 정보 등
+### 📱 Integrated Info Widget
+- Display important info directly on your lock screen  
+- Example: Academic calendar, announcements, event alerts
 
-### 🔥 소비/운동 시각화 기능
-- **전동 킥보드 대신 걸었을 때의 칼로리 소모와 비용 절감** 시각화  
-- 잠금 화면에서 확인 가능 → 걸음을 유도
+### 🔥 Burned Calories & Saved Money Visualization
+- View **how much you've walked instead of riding**  
+- See **calories burned and money saved** in real time
 
-### 👟 챌린지 시스템
-- **친구와 함께 도전 과제를 공유**하고 경쟁  
-- 앱 사용 지속성과 동기 부여 강화
+### 👟 Challenge System
+- Compete and share progress with friends  
+- Encourage consistent use and healthier habits
 
-### 🗺️ 캠퍼스 내비게이션
-- **걷기/킥보드 이동 시 최적 경로 안내**
-- 캠퍼스 내 건물 정보 및 효율적인 시간 계획 지원
+### 🗺️ Campus Navigation
+- Suggests the **optimal route** whether walking or scooting  
+- Helps you plan time efficiently with **facility info**
 
 ---
 
 ## 💡 Tech Stack
+
 - **React Native**
 - **Firebase (Auth, Firestore)**
 - **Expo**
-- 기타 사용된 라이브러리는 프로젝트 내 `package.json` 참고
+- For more libraries, check `package.json` in the project root
 
 ---
 
-## 🔗 Repository Purpose
+## 🔗 Why This Project?
 
-본 앱은 **모빌리티 사용습관 개선 + 교내 소통 활성화**라는 두 가지 목표를 통합하여  
-**중앙대학교만의 실질적인 캠퍼스 서비스**를 구현하고자 합니다.
+This app is designed to **promote healthy mobility habits**  
+and **solve communication issues** on campus by combining both in one powerful, user-friendly tool —  
+**made for CAU, by CAU.**
+
+---
 
 
-<<<<<<< HEAD
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
